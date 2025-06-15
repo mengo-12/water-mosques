@@ -1,35 +1,32 @@
 import { writeFile } from 'fs/promises'
 import path from 'path'
-import { v4 as uuidv4 } from 'uuid'
-import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { NextResponse } from 'next/server'
 
 export async function POST(req) {
     const formData = await req.formData()
     const file = formData.get('image')
-    const orderId = formData.get('orderId')
+    const id = formData.get('id')
 
-    if (!file || !orderId) {
-        return NextResponse.json({ error: 'البيانات غير مكتملة' }, { status: 400 })
+    if (!file || !id) {
+        return NextResponse.json({ error: 'Missing image or order ID' }, { status: 400 })
     }
 
-    const bytes = await file.arrayBuffer()
-    const buffer = Buffer.from(bytes)
+    const buffer = Buffer.from(await file.arrayBuffer())
+    const fileName = `${Date.now()}-${file.name}`
+    const uploadPath = path.join(process.cwd(), 'public', 'uploads', fileName)
 
-    const fileName = `${uuidv4()}-${file.name}`
-    const filePath = path.join(process.cwd(), 'public/uploads', fileName)
-
-    await writeFile(filePath, buffer)
+    await writeFile(uploadPath, buffer)
 
     const imageUrl = `/uploads/${fileName}`
 
-    await prisma.order.update({
-        where: { id: Number(orderId) },
+    const updatedOrder = await prisma.order.update({
+        where: { id: parseInt(id) },
         data: {
             status: 'تم التوصيل',
             deliveryImage: imageUrl,
         },
     })
 
-    return NextResponse.json({ success: true, imageUrl })
+    return NextResponse.json(updatedOrder)
 }

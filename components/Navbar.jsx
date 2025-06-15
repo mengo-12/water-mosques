@@ -1,42 +1,80 @@
 'use client'
+import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 export default function Navbar() {
     const pathname = usePathname()
 
-    const navItems = [
+    // محاكاة حالة تسجيل الدخول - غيّرها حسب حالتك الفعلية
+    const [user, setUser] = useState({
+        name: 'أحمد المندوب',
+        role: 'courier', // أو admin
+    })
+
+    const links = [
         { href: '/', label: 'الرئيسية' },
-        { href: '/about', label: 'من نحن' },
         { href: '/products', label: 'المنتجات' },
-        { href: '/cart', label: 'السلة' },
-        { href: '/contact', label: 'اتصل بنا' },
+        { href: '/orders', label: 'الطلبات' },
     ]
 
-    return (
-        <nav className="fixed top-0 w-full bg-white shadow-md z-50">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center justify-between h-16">
-                    {/* شعار الموقع أو اسمك */}
-                    <Link href="/" className="text-xl font-bold text-primary">
-                        توصيل مياه المساجد
-                    </Link>
+    const handleLogout = () => {
+        setUser(null)
+        // هنا ضع الكود الحقيقي لتسجيل الخروج
+        console.log('تم تسجيل الخروج')
+    }
 
-                    <div className="flex space-x-6">
-                        {navItems.map(({ href, label }) => (
+    return (
+        <nav className="bg-white border-b shadow-sm py-4 px-6">
+            <div className="max-w-6xl mx-auto flex justify-between items-center">
+                <div className="text-xl font-bold text-blue-700">توصيل المياه</div>
+
+                <ul className="flex items-center gap-4">
+                    {links.map(link => (
+                        <li key={link.href}>
                             <Link
-                                key={href}
-                                href={href}
-                                className={`px-3 py-2 rounded-md text-sm font-medium ${pathname === href
-                                        ? 'bg-primary text-white'
-                                        : 'text-gray-700 hover:bg-primary hover:text-white transition'
+                                href={link.href}
+                                className={`px-3 py-1 rounded ${pathname === link.href
+                                        ? 'text-white bg-blue-600'
+                                        : 'text-gray-700 hover:bg-gray-100'
                                     }`}
                             >
-                                {label}
+                                {link.label}
                             </Link>
-                        ))}
-                    </div>
-                </div>
+                        </li>
+                    ))}
+
+                    {!user ? (
+                        <li>
+                            <Link
+                                href="/login"
+                                className="px-4 py-1 rounded bg-blue-600 text-white hover:bg-blue-700"
+                            >
+                                تسجيل الدخول
+                            </Link>
+                        </li>
+                    ) : (
+                        <li className="relative group">
+                            <button className="px-3 py-1 rounded bg-gray-100 text-gray-800 hover:bg-gray-200">
+                                {user.name}
+                            </button>
+                            <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-md hidden group-hover:block z-10 text-right">
+                                <Link
+                                    href="/profile"
+                                    className="block px-4 py-2 hover:bg-gray-100"
+                                >
+                                    الملف الشخصي
+                                </Link>
+                                <button
+                                    onClick={handleLogout}
+                                    className="w-full text-right px-4 py-2 hover:bg-gray-100"
+                                >
+                                    تسجيل الخروج
+                                </button>
+                            </div>
+                        </li>
+                    )}
+                </ul>
             </div>
         </nav>
     )

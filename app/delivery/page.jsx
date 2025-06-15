@@ -12,35 +12,31 @@ export default function DeliveryPage() {
             .then(data => setOrders(data))
     }, [])
 
+    const [deliveryFile, setDeliveryFile] = useState(null)
+
+    const handleFileChange = (e) => {
+        setDeliveryFile(e.target.files[0])
+    }
+
     const markAsDelivered = async () => {
-        if (!selectedFile) {
+        if (!deliveryFile) {
             alert('يرجى اختيار صورة التوصيل أولاً')
             return
         }
 
         const formData = new FormData()
-        formData.append('image', selectedFile)
-        formData.append('orderId', selectedOrder.id)
+        formData.append('image', deliveryFile)
+        formData.append('id', selectedOrder.id)
+        formData.append('status', 'تم التوصيل')
 
         const res = await fetch('/api/delivery/upload', {
             method: 'POST',
             body: formData,
         })
 
-        const data = await res.json()
-        if (data.success) {
-            const updated = {
-                ...selectedOrder,
-                status: 'تم التوصيل',
-                deliveryImage: data.imageUrl,
-            }
-            setOrders(orders.map(order => order.id === updated.id ? updated : order))
-            setSelectedOrder(updated)
-            setSelectedFile(null)
-            alert('✅ تم رفع الصورة وتحديث حالة الطلب')
-        } else {
-            alert('حدث خطأ أثناء رفع الصورة')
-        }
+        const updated = await res.json()
+        setOrders(orders.map(order => order.id === updated.id ? updated : order))
+        setSelectedOrder(updated)
     }
 
     return (
@@ -89,10 +85,13 @@ export default function DeliveryPage() {
 
                             {selectedOrder.status !== 'تم التوصيل' && (
                                 <>
-                                    <div className="my-4">
-                                        <label className="block mb-2 font-semibold">صورة التوصيل:</label>
-                                        <input type="file" accept="image/*" onChange={(e) => setSelectedFile(e.target.files[0])} />
-                                    </div>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleFileChange}
+                                        className="mb-4 block"
+                                    />
+
                                     <button
                                         onClick={markAsDelivered}
                                         className="bg-green-600 px-4 py-2 text-white rounded hover:bg-green-700 transition"

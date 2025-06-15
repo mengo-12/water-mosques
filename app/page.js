@@ -1,28 +1,28 @@
 export default function Home() {
   return (
-    <section className="text-center space-y-8">
-      <h1 className="text-3xl md:text-5xl font-bold text-primary mt-8">
-        خدمة توصيل مياه للمساجد
-      </h1>
+    <main className="max-w-4xl mx-auto p-6 py-25">
+      <header className="mb-8">
+        <h1 className="text-3xl font-bold text-blue-700">توصيل مياه المساجد</h1>
+        <p className="text-gray-600 mt-2">أفضل خدمة لتوصيل المياه للمساجد في الرياض.</p>
+      </header>
 
-      <p className="text-lg text-gray-600 max-w-xl mx-auto">
-        اطلب كراتين المياه لمسجدك بكل سهولة وحدد الموقع على الخريطة وادفع إلكترونيًا – نوصلها لك في أسرع وقت.
-      </p>
-
-      <a
-        href="/products"
-        className="inline-block bg-primary text-white px-6 py-3 rounded-lg text-lg hover:bg-primary-dark transition"
-      >
-        اطلب الآن
-      </a>
-
-      <div className="mt-10">
-        <img
-          src="https://images.unsplash.com/photo-1603785221144-0314d7ffb6a0"
-          alt="ماء للمساجد"
-          className="rounded-2xl mx-auto max-w-3xl shadow-lg"
-        />
-      </div>
-    </section>
+      <section>
+        <h2 className="text-2xl font-semibold mb-4">منتجاتنا</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* مثال منتج */}
+          <div className="border rounded p-4 shadow-sm hover:shadow-lg transition">
+            <img
+              src="/water-bottle.png"
+              alt="زجاجة مياه 1.5 لتر"
+              className="w-full h-40 object-cover rounded"
+            />
+            <h3 className="mt-3 font-semibold">زجاجة مياه 1.5 لتر</h3>
+            <p className="mt-1 text-gray-700">مياه نقية وصحية.</p>
+            <p className="mt-2 font-bold text-blue-600">10 ريال</p>
+          </div>
+          {/* أضف منتجات أخرى هنا */}
+        </div>
+      </section>
+    </main>
   )
 }
