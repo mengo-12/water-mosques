@@ -265,8 +265,13 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import MosqueLocationLeaflet from '@/components/MosqueLocationLeaflet'
+import dynamic from 'next/dynamic'
 import Cookies from 'js-cookie'
+
+// استيراد مكون الخريطة بشكل ديناميكي لتعطيل SSR
+const MosqueLocationLeaflet = dynamic(() => import('@/components/MosqueLocationLeaflet'), {
+    ssr: false,
+})
 
 export default function CheckoutPage() {
     const [cartItems, setCartItems] = useState([])
@@ -417,4 +422,5 @@ export default function CheckoutPage() {
         </section>
     )
 }
+
 

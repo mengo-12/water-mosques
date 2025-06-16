@@ -139,7 +139,9 @@
 
 import React, { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
-import SelectMosqueMap from '@/components/SelectMosqueMap'
+
+// استيراد مكون SelectMosqueMap ديناميكيًا بدون SSR
+const SelectMosqueMap = dynamic(() => import('@/components/SelectMosqueMap'), { ssr: false })
 
 const MosqueMap = dynamic(() => import('@/components/MosqueMap'), { ssr: false })
 
@@ -193,7 +195,7 @@ export default function OrderPage() {
             mosqueName: mosqueName || "موقع مخصص",
             locationLat: parseFloat(lat),
             locationLng: parseFloat(lng),
-            deliveryLocationUrl: googleMapsLink, // ✅ رابط الخريطة
+            deliveryLocationUrl: googleMapsLink,
             totalPrice,
             items: items.map(item => ({
                 productId: parseInt(item.productId),
@@ -302,6 +304,7 @@ export default function OrderPage() {
         </form>
     )
 }
+
 
 
 
