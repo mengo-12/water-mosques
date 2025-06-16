@@ -56,10 +56,16 @@ export async function GET() {
         const orders = await prisma.order.findMany({
             where: {
                 status: {
-                    not: 'تم التوصيل', // فقط الطلبات غير المكتملة
+                    not: 'تم التوصيل',
                 },
             },
             include: {
+                user: {
+                    select: {
+                        username: true,
+                        phone: true,
+                    },
+                },
                 orderItems: {
                     include: {
                         product: true,

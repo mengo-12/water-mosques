@@ -68,7 +68,9 @@ export default function DeliveryPage() {
                     ) : (
                         <>
                             <h2 className="text-2xl font-bold mb-4">{`تفاصيل الطلب #${selectedOrder.id}`}</h2>
-                            <p><strong>اسم المسجد:</strong> {selectedOrder.mosqueName}</p>
+                            <p><strong>اسم العميل:</strong> {selectedOrder.user?.username}</p>
+                            <p><strong>رقم الهاتف:</strong> {selectedOrder.user?.phone || 'غير متوفر'}</p>
+                            {/* <p><strong>اسم المسجد:</strong> {selectedOrder.mosqueName}</p> */}
                             <p><strong>الحالة:</strong> {selectedOrder.status}</p>
                             <p><strong>الموقع:</strong> {selectedOrder.locationLat.toFixed(4)}, {selectedOrder.locationLng.toFixed(4)}</p>
 
