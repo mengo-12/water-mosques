@@ -9,16 +9,16 @@ datasource db {
 
 model User {
   id        Int        @id @default(autoincrement())
-  username  String     // ✅ اسم المستخدم
+  username  String
   email     String     @unique
   password  String
-  phone     String?    // ✅ رقم الهاتف (اختياري يمكن جعله إجباري إن أردت)
+  phone     String?
   role      String     @default("CLIENT")
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
-  orders    Order[]
   Cart      Cart[]
   CartItem  CartItem[]
+  orders    Order[]
 }
 
 model Product {
@@ -26,8 +26,8 @@ model Product {
   name       String
   price      Float
   createdAt  DateTime    @default(now())
-  orderItems OrderItem[]
   CartItem   CartItem[]
+  orderItems OrderItem[]
 }
 
 model Order {
@@ -36,7 +36,7 @@ model Order {
   mosqueName          String
   locationLat         Float
   locationLng         Float
-  deliveryLocationUrl String? // ✅ الرابط الذي يوجه المندوب إلى المسجد في Google Maps
+  deliveryLocationUrl String?
   status              String      @default("PENDING")
   totalPrice          Float
   deliveryImage       String?
@@ -51,8 +51,8 @@ model OrderItem {
   orderId   Int
   productId Int
   quantity  Int
-  product   Product @relation(fields: [productId], references: [id])
   order     Order   @relation(fields: [orderId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
 }
 
 model Mosque {
@@ -65,19 +65,18 @@ model Mosque {
 model Cart {
   id        Int        @id @default(autoincrement())
   userId    Int
-  user      User       @relation(fields: [userId], references: [id])
-  items     CartItem[] // علاقة إلى CartItem
   createdAt DateTime   @default(now())
+  user      User       @relation(fields: [userId], references: [id])
+  items     CartItem[]
 }
 
 model CartItem {
-  id        Int @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   cartId    Int
   userId    Int
   productId Int
-  quantity  Int @default(1)
-
-  cart    Cart    @relation(fields: [cartId], references: [id])
-  user    User    @relation(fields: [userId], references: [id])
-  product Product @relation(fields: [productId], references: [id])
+  quantity  Int     @default(1)
+  cart      Cart    @relation(fields: [cartId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+  user      User    @relation(fields: [userId], references: [id])
 }
