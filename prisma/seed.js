@@ -1,5 +1,6 @@
 const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
+const fs = require('fs')
 
 async function main() {
     // إنشاء منتجات مبدئية
@@ -31,6 +32,20 @@ async function main() {
             },
         ],
     })
+
+    // قراءة بيانات المساجد من ملف JSON
+    const mosquesData = JSON.parse(fs.readFileSync('./prisma/mosques.json', 'utf-8'))
+
+    // إضافة بيانات المساجد إلى قاعدة البيانات
+    for (const mosque of mosquesData) {
+        await prisma.mosque.create({
+            data: {
+                name: mosque.name,
+                latitude: mosque.latitude,
+                longitude: mosque.longitude,
+            },
+        })
+    }
 
     console.log('✅ تمت تهيئة البيانات بنجاح')
 }

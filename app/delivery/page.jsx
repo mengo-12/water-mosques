@@ -4,15 +4,13 @@ import React, { useEffect, useState } from 'react'
 export default function DeliveryPage() {
     const [orders, setOrders] = useState([])
     const [selectedOrder, setSelectedOrder] = useState(null)
-    const [selectedFile, setSelectedFile] = useState(null)
+    const [deliveryFile, setDeliveryFile] = useState(null)
 
     useEffect(() => {
         fetch('/api/delivery/orders')
             .then(res => res.json())
             .then(data => setOrders(data))
     }, [])
-
-    const [deliveryFile, setDeliveryFile] = useState(null)
 
     const handleFileChange = (e) => {
         setDeliveryFile(e.target.files[0])
@@ -40,8 +38,9 @@ export default function DeliveryPage() {
     }
 
     return (
-        <section className="max-w-5xl mx-auto p-4 space-y-6">
-            <h1 className="text-3xl font-bold text-primary text-center mb-6">لوحة المندوب</h1>
+        <section className="max-w-5xl mx-auto p-4 space-y-6 text-black">
+            {/* الآن كل النصوص داخل هذا القسم ستكون باللون الأسود */}
+            <h1 className="text-3xl font-bold text-center mb-6">لوحة المندوب</h1>
 
             <div className="flex flex-col md:flex-row gap-6">
                 <div className="md:w-1/3 bg-white rounded shadow p-4 overflow-y-auto max-h-[600px]">
@@ -50,7 +49,7 @@ export default function DeliveryPage() {
                         {orders.map(order => (
                             <li
                                 key={order.id}
-                                className={`cursor-pointer p-2 rounded mb-2 ${selectedOrder?.id === order.id ? 'bg-primary text-white' : 'hover:bg-gray-100'}`}
+                                className={`cursor-pointer p-2 rounded mb-2 ${selectedOrder?.id === order.id ? 'bg-blue-600 text-white' : 'hover:bg-gray-100 text-black'}`}
                                 onClick={() => setSelectedOrder(order)}
                             >
                                 <div className="flex justify-between">
@@ -68,17 +67,26 @@ export default function DeliveryPage() {
                         <p className="text-center text-gray-500">اختر طلبًا لعرض التفاصيل</p>
                     ) : (
                         <>
-                            <h2 className="text-2xl font-bold mb-4">تفاصيل الطلب #{selectedOrder.id}</h2>
+                            <h2 className="text-2xl font-bold mb-4">{`تفاصيل الطلب #${selectedOrder.id}`}</h2>
                             <p><strong>اسم المسجد:</strong> {selectedOrder.mosqueName}</p>
                             <p><strong>الحالة:</strong> {selectedOrder.status}</p>
-                            <p><strong>الموقع:</strong> {selectedOrder.location.lat.toFixed(4)}, {selectedOrder.location.lng.toFixed(4)}</p>
+                            <p><strong>الموقع:</strong> {selectedOrder.locationLat.toFixed(4)}, {selectedOrder.locationLng.toFixed(4)}</p>
+
+                            <a
+                                href={selectedOrder.deliveryLocationUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-block mt-2 mb-4 underline text-black"
+                            >
+                                عرض الموقع على Google Maps
+                            </a>
 
                             <h3 className="font-semibold mt-4 mb-2">المنتجات:</h3>
                             <ul className="mb-4">
-                                {selectedOrder.items.map(item => (
+                                {selectedOrder.orderItems.map(item => (
                                     <li key={item.id} className="flex justify-between py-1 border-b">
-                                        <span>{item.name} × {item.quantity}</span>
-                                        <span>{item.price * item.quantity} ريال</span>
+                                        <span>{item.product.name} × {item.quantity}</span>
+                                        <span>{item.product.price * item.quantity} ريال</span>
                                     </li>
                                 ))}
                             </ul>

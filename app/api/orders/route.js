@@ -1,12 +1,65 @@
-import { prisma } from '@/lib/prisma'
+// import prisma from '@/lib/prisma'
+// import { NextResponse } from 'next/server'
+
+// export async function GET() {
+//     try {
+//         const orders = await prisma.order.findMany({
+//             include: {
+//                 orderItems: true,  // إذا هذا هو اسم العلاقة
+//                 user: true,        // إذا تريد تجلب بيانات المستخدم
+//             }
+//         });
+//         return NextResponse.json(orders)
+//     } catch (error) {
+//         console.error(error)
+//         return NextResponse.json({ error: 'فشل في جلب الطلبات' }, { status: 500 })
+//     }
+// }
+
+// export async function POST(request) {
+//     try {
+//         const body = await request.json()
+//         // بيانات الطلب هنا مثل: userId, mosqueName, locationLat, locationLng, totalPrice, items
+
+//         const order = await prisma.order.create({
+//             data: {
+//                 userId: body.userId,
+//                 mosqueName: body.mosqueName,
+//                 locationLat: body.locationLat,
+//                 locationLng: body.locationLng,
+//                 totalPrice: body.totalPrice,
+//                 status: 'جديد',
+//                 items: {
+//                     create: body.items.map(item => ({
+//                         productId: item.productId,
+//                         quantity: item.quantity,
+//                     }))
+//                 }
+//             },
+//             include: {
+//                 items: true,
+//             }
+//         })
+//         return NextResponse.json(order, { status: 201 })
+//     } catch (error) {
+//         console.error(error)
+//         return NextResponse.json({ error: 'فشل في إنشاء الطلب' }, { status: 500 })
+//     }
+// }
+
+import prisma from '@/lib/prisma'
 import { NextResponse } from 'next/server'
 
 export async function GET() {
     try {
         const orders = await prisma.order.findMany({
             include: {
-                orderItems: true,  // إذا هذا هو اسم العلاقة
-                user: true,        // إذا تريد تجلب بيانات المستخدم
+                orderItems: {
+                    include: {
+                        product: true, // إذا تحب تجيب اسم المنتج
+                    }
+                },
+                user: true,
             }
         });
         return NextResponse.json(orders)
@@ -19,7 +72,6 @@ export async function GET() {
 export async function POST(request) {
     try {
         const body = await request.json()
-        // بيانات الطلب هنا مثل: userId, mosqueName, locationLat, locationLng, totalPrice, items
 
         const order = await prisma.order.create({
             data: {
@@ -29,7 +81,7 @@ export async function POST(request) {
                 locationLng: body.locationLng,
                 totalPrice: body.totalPrice,
                 status: 'جديد',
-                items: {
+                orderItems: {
                     create: body.items.map(item => ({
                         productId: item.productId,
                         quantity: item.quantity,
@@ -37,7 +89,7 @@ export async function POST(request) {
                 }
             },
             include: {
-                items: true,
+                orderItems: true,
             }
         })
         return NextResponse.json(order, { status: 201 })

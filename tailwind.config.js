@@ -1,13 +1,17 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+    darkMode: 'class',
     content: [
-        "./src/**/*.{js,ts,jsx,tsx}", // مهم حتى تعمل Tailwind داخل App Router
+        './app/**/*.{js,ts,jsx,tsx}',        // ✅ هذا هو الصحيح
+        './components/**/*.{js,ts,jsx,tsx}', // ✅ تأكد أنك تغطي كل الامتدادات
     ],
     theme: {
         extend: {
             colors: {
-                primary: '#2563eb',
-                'primary-dark': '#1d4ed8',
+                primary: '#1D4ED8',
+                'primary-dark': '#1E40AF',
+                success: '#16A34A',
+                danger: '#DC2626',
             },
         },
     },

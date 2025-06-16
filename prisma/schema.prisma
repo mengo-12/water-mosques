@@ -8,36 +8,40 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
+  id        Int        @id @default(autoincrement())
+  email     String     @unique
   password  String
-  role      String   @default("CLIENT")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  role      String     @default("CLIENT")
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
   orders    Order[]
+  Cart      Cart[]
+  CartItem  CartItem[]
 }
 
 model Product {
-  id       Int     @id @default(autoincrement())
-  name     String
-  price    Float
-  createdAt DateTime @default(now())
+  id         Int         @id @default(autoincrement())
+  name       String
+  price      Float
+  createdAt  DateTime    @default(now())
   orderItems OrderItem[]
+  CartItem   CartItem[]
 }
 
 model Order {
-  id            Int         @id @default(autoincrement())
-  userId        Int
-  mosqueName    String
-  locationLat   Float
-  locationLng   Float
-  status        String      @default("PENDING")
-  totalPrice    Float
-  deliveryImage String?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  user          User        @relation(fields: [userId], references: [id])
-  orderItems    OrderItem[]
+  id                  Int         @id @default(autoincrement())
+  userId              Int
+  mosqueName          String
+  locationLat         Float
+  locationLng         Float
+  deliveryLocationUrl String? // ✅ الرابط الذي يوجه المندوب إلى المسجد في Google Maps
+  status              String      @default("PENDING")
+  totalPrice          Float
+  deliveryImage       String?
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+  user                User        @relation(fields: [userId], references: [id])
+  orderItems          OrderItem[]
 }
 
 model OrderItem {
@@ -47,4 +51,31 @@ model OrderItem {
   quantity  Int
   product   Product @relation(fields: [productId], references: [id])
   order     Order   @relation(fields: [orderId], references: [id])
+}
+
+model Mosque {
+  id        Int    @id @default(autoincrement())
+  name      String
+  latitude  Float
+  longitude Float
+}
+
+model Cart {
+  id        Int        @id @default(autoincrement())
+  userId    Int
+  user      User       @relation(fields: [userId], references: [id])
+  items     CartItem[] // علاقة إلى CartItem
+  createdAt DateTime   @default(now())
+}
+
+model CartItem {
+  id        Int @id @default(autoincrement())
+  cartId    Int
+  userId    Int
+  productId Int
+  quantity  Int @default(1)
+
+  cart    Cart    @relation(fields: [cartId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
 }

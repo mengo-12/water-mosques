@@ -23,31 +23,54 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="max-w-md mx-auto mt-20 p-6 bg-white rounded shadow">
-            <h2 className="text-2xl font-bold mb-4 text-center">تسجيل الدخول</h2>
-            {error && <p className="text-red-500 text-center mb-4">{error}</p>}
-            <form onSubmit={handleLogin} className="space-y-4">
-                <input
-                    type="text"
-                    placeholder="اسم المستخدم"
-                    className="w-full px-4 py-2 border rounded"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                />
-                <input
-                    type="password"
-                    placeholder="كلمة المرور"
-                    className="w-full px-4 py-2 border rounded"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
-                <button
-                    type="submit"
-                    className="w-full bg-primary text-white py-2 rounded hover:bg-primary-dark transition"
-                >
-                    تسجيل الدخول
-                </button>
-            </form>
+        <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+            <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
+                <h2 className="text-3xl font-bold text-center text-blue-800 mb-6">تسجيل الدخول</h2>
+
+                {error && (
+                    <p className="bg-red-100 text-red-700 p-2 rounded text-center mb-4">{error}</p>
+                )}
+
+                <form onSubmit={handleLogin} className="space-y-5">
+                    <div>
+                        <input
+                            type="text"
+                            placeholder="اسم المستخدم"
+                            className="w-full border border-gray-300 rounded px-4 py-2 text-black focus:outline-none focus:ring-2 focus:ring-blue-600"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                        />
+                    </div>
+
+                    <div>
+                        <input
+                            type="password"
+                            placeholder="كلمة المرور"
+                            className="w-full border border-gray-300 rounded px-4 py-2 text-black focus:outline-none focus:ring-2 focus:ring-blue-600"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                    </div>
+
+                    <button
+                        type="submit"
+                        className="w-full bg-blue-700 hover:bg-blue-800 text-white font-semibold py-2 rounded transition duration-200"
+                    >
+                        تسجيل الدخول
+                    </button>
+                </form>
+
+                {/* زر تسجيل حساب جديد */}
+                <div className="mt-6 text-center">
+                    <p className="text-gray-700">ليس لديك حساب؟</p>
+                    <button
+                        onClick={() => router.push('/register')}
+                        className="mt-2 inline-block text-blue-700 hover:underline font-medium"
+                    >
+                        تسجيل حساب جديد
+                    </button>
+                </div>
+            </div>
         </div>
     )
 }

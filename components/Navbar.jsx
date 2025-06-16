@@ -2,79 +2,85 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { ShoppingCart, LogIn, LogOut, User } from 'lucide-react'
+import DarkModeToggle from '@/components/DarkModeToggle'
+
+
 
 export default function Navbar() {
     const pathname = usePathname()
 
-    // محاكاة حالة تسجيل الدخول - غيّرها حسب حالتك الفعلية
+    // تمثيل المستخدم المسجل (يمكنك ربطه لاحقًا مع Auth)
     const [user, setUser] = useState({
-        name: 'أحمد المندوب',
-        role: 'courier', // أو admin
+        name: 'أحمد',
+        role: 'client', // 'admin' | 'courier' | 'client' | null
     })
-
-    const links = [
-        { href: '/', label: 'الرئيسية' },
-        { href: '/products', label: 'المنتجات' },
-        { href: '/orders', label: 'الطلبات' },
-    ]
 
     const handleLogout = () => {
         setUser(null)
-        // هنا ضع الكود الحقيقي لتسجيل الخروج
         console.log('تم تسجيل الخروج')
     }
 
-    return (
-        <nav className="bg-white border-b shadow-sm py-4 px-6">
-            <div className="max-w-6xl mx-auto flex justify-between items-center">
-                <div className="text-xl font-bold text-blue-700">توصيل المياه</div>
+    // روابط عامة (للكل)
+    const navLinks = [
+        { href: '/', label: 'الرئيسية' },
+        { href: '/products', label: 'المنتجات' },
+    ]
 
-                <ul className="flex items-center gap-4">
-                    {links.map(link => (
+    // روابط خاصة حسب الدور
+    if (user?.role === 'admin') {
+        navLinks.push({ href: '/dashboard', label: 'البيانات' })
+    }
+
+    if (user?.role === 'courier') {
+        navLinks.push({ href: '/orders', label: 'الطلبات' })
+    }
+
+    return (
+        <nav className="bg-blue-900 text-white py-4 px-6 sticky top-0 z-50 shadow">
+            <div className="max-w-7xl mx-auto flex justify-between items-center">
+                {/* شعار الموقع */}
+                <div className="text-xl font-bold">توصيل المياه</div>
+
+                {/* روابط التنقل */}
+                <ul className="flex gap-6 text-lg">
+                    {navLinks.map(link => (
                         <li key={link.href}>
                             <Link
                                 href={link.href}
                                 className={`px-3 py-1 rounded ${pathname === link.href
-                                        ? 'text-white bg-blue-600'
-                                        : 'text-gray-700 hover:bg-gray-100'
+                                        ? 'bg-white text-blue-900 font-semibold'
+                                        : 'hover:bg-blue-800'
                                     }`}
                             >
                                 {link.label}
                             </Link>
                         </li>
                     ))}
+                </ul>
+
+                {/* أيقونات الحساب والسلة */}
+                <div className="flex items-center gap-4">
+                    <Link href="/cart" title="السلة">
+                        <ShoppingCart className="w-6 h-6 hover:text-gray-300" />
+                    </Link>
 
                     {!user ? (
-                        <li>
-                            <Link
-                                href="/login"
-                                className="px-4 py-1 rounded bg-blue-600 text-white hover:bg-blue-700"
-                            >
-                                تسجيل الدخول
-                            </Link>
-                        </li>
+                        <Link href="/login" title="تسجيل الدخول">
+                            <LogIn className="w-6 h-6 hover:text-gray-300" />
+                        </Link>
                     ) : (
-                        <li className="relative group">
-                            <button className="px-3 py-1 rounded bg-gray-100 text-gray-800 hover:bg-gray-200">
-                                {user.name}
+                        <>
+                            <Link href="/profile" title="الملف الشخصي">
+                                <User className="w-6 h-6 hover:text-gray-300" />
+                            </Link>
+                            <button onClick={handleLogout} title="تسجيل الخروج">
+                                <LogOut className="w-6 h-6 hover:text-gray-300" />
                             </button>
-                            <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-md hidden group-hover:block z-10 text-right">
-                                <Link
-                                    href="/profile"
-                                    className="block px-4 py-2 hover:bg-gray-100"
-                                >
-                                    الملف الشخصي
-                                </Link>
-                                <button
-                                    onClick={handleLogout}
-                                    className="w-full text-right px-4 py-2 hover:bg-gray-100"
-                                >
-                                    تسجيل الخروج
-                                </button>
-                            </div>
-                        </li>
+                            <DarkModeToggle />
+                        </>
                     )}
-                </ul>
+                </div>
             </div>
         </nav>
     )
