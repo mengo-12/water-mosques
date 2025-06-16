@@ -1,60 +1,29 @@
-const { PrismaClient } = require('@prisma/client')
+// prisma/seed.js
+import { PrismaClient } from '@prisma/client'
+import bcrypt from 'bcrypt'
+
 const prisma = new PrismaClient()
-const fs = require('fs')
 
 async function main() {
-    // إنشاء منتجات مبدئية
-    await prisma.product.createMany({
-        data: [
-            { name: 'كرتون مياه صغير', price: 15 },
-            { name: 'كرتون مياه متوسط', price: 20 },
-            { name: 'كرتون مياه كبير', price: 25 },
-        ],
-    })
+    const adminEmail = 'admin@example.com'
+    const existingAdmin = await prisma.user.findUnique({ where: { email: adminEmail } })
 
-    // إنشاء مستخدمين
-    await prisma.user.createMany({
-        data: [
-            {
-                email: 'admin@example.com',
-                password: 'admin123', // لاحقاً نربطها بالتشفير
+    if (!existingAdmin) {
+        const hashedPassword = await bcrypt.hash('Admin@123', 10)
+        await prisma.user.create({
+            data: {
+                username: 'admin',
+                email: adminEmail,
+                password: hashedPassword,
                 role: 'ADMIN',
             },
-            {
-                email: 'delivery@example.com',
-                password: 'delivery123',
-                role: 'DELIVERY',
-            },
-            {
-                email: 'client@example.com',
-                password: 'client123',
-                role: 'CLIENT',
-            },
-        ],
-    })
-
-    // قراءة بيانات المساجد من ملف JSON
-    const mosquesData = JSON.parse(fs.readFileSync('./prisma/mosques.json', 'utf-8'))
-
-    // إضافة بيانات المساجد إلى قاعدة البيانات
-    for (const mosque of mosquesData) {
-        await prisma.mosque.create({
-            data: {
-                name: mosque.name,
-                latitude: mosque.latitude,
-                longitude: mosque.longitude,
-            },
         })
+        console.log('تم إنشاء حساب المدير بنجاح')
+    } else {
+        console.log('حساب المدير موجود مسبقاً')
     }
-
-    console.log('✅ تمت تهيئة البيانات بنجاح')
 }
 
 main()
-    .catch((e) => {
-        console.error(e)
-        process.exit(1)
-    })
-    .finally(async () => {
-        await prisma.$disconnect()
-    })
+    .catch(console.error)
+    .finally(() => prisma.$disconnect())

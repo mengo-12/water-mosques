@@ -1,13 +1,12 @@
-export default async function handler(req, res) {
-    if (req.method === 'GET') {
-        try {
-            const products = await prisma.product.findMany()
-            res.status(200).json(products)
-        } catch (error) {
-            console.error(error)
-            res.status(500).json({ error: 'فشل في جلب المنتجات' })
-        }
-    } else {
-        res.status(405).json({ error: 'طريقة غير مدعومة' })
+import { prisma } from '@/lib/prisma'
+import { NextResponse } from 'next/server'
+
+export async function GET() {
+    try {
+        const products = await prisma.product.findMany()
+        return NextResponse.json(products)
+    } catch (error) {
+        console.error(error)
+        return NextResponse.json({ error: 'فشل في جلب المنتجات' }, { status: 500 })
     }
 }

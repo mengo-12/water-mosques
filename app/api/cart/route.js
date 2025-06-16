@@ -1,25 +1,36 @@
-import { prisma } from '@/lib/prisma'
 import { NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { cookies } from 'next/headers'
 
-export async function GET(req) {
-    const { searchParams } = new URL(req.url)
-    const userId = parseInt(searchParams.get('userId'))
-
-    if (!userId) {
-        return NextResponse.json({ error: 'User ID is required' }, { status: 400 })
-    }
-
+export async function GET() {
     try {
-        const cartItems = await prisma.cartItem.findMany({
+        // الحصول على userId من الكوكيز
+        const cookieStore = await cookies()  // هنا أضفنا await
+        const userId = parseInt(cookieStore.get('userId')?.value)
+
+        if (!userId) {
+            return NextResponse.json({ error: 'لم يتم العثور على رقم المستخدم في الكوكيز' }, { status: 400 })
+        }
+
+        // جلب السلة مع المنتجات
+        const cart = await prisma.cart.findFirst({
             where: { userId },
             include: {
-                product: true,
+                items: {
+                    include: {
+                        product: true,
+                    },
+                },
             },
         })
 
-        return NextResponse.json(cartItems)
+        if (!cart) {
+            return NextResponse.json({ items: [] }) // سلة فارغة
+        }
+
+        return NextResponse.json(cart)
     } catch (error) {
         console.error(error)
-        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
+        return NextResponse.json({ error: 'حدث خطأ أثناء جلب السلة' }, { status: 500 })
     }
 }

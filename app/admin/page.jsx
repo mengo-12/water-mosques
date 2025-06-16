@@ -71,6 +71,7 @@ export default function AdminPage() {
             <h1 className="text-3xl font-bold text-primary text-center mb-6">لوحة المشرف - الطلبات</h1>
 
             <div className="flex flex-col md:flex-row gap-6">
+                {/* قائمة الطلبات */}
                 <div className="md:w-1/3 bg-white rounded shadow p-4 overflow-y-auto max-h-[600px]">
                     <h2 className="text-xl font-semibold mb-4">قائمة الطلبات</h2>
                     <ul>
@@ -86,12 +87,15 @@ export default function AdminPage() {
                                     <span>{order.status}</span>
                                 </div>
                                 <div>{order.mosqueName}</div>
-                                <div className="text-sm text-gray-500">{new Date(order.createdAt).toLocaleDateString()}</div>
+                                <div className="text-sm text-gray-500">
+                                    {new Date(order.createdAt).toLocaleDateString()}
+                                </div>
                             </li>
                         ))}
                     </ul>
                 </div>
 
+                {/* تفاصيل الطلب */}
                 <div className="md:w-2/3 bg-white rounded shadow p-6">
                     {!selectedOrder ? (
                         <p className="text-center text-gray-500">اختر طلبًا لعرض التفاصيل</p>
@@ -99,9 +103,11 @@ export default function AdminPage() {
                         <>
                             <h2 className="text-2xl font-bold mb-4">تفاصيل الطلب #{selectedOrder.id}</h2>
                             <p><strong>اسم المسجد:</strong> {selectedOrder.mosqueName}</p>
+                            <p><strong>اسم العميل:</strong> {selectedOrder.user?.username}</p>
+                            <p><strong>رقم الجوال:</strong> {selectedOrder.user?.phone}</p>
                             <p><strong>تاريخ الطلب:</strong> {new Date(selectedOrder.createdAt).toLocaleDateString()}</p>
                             <p><strong>الحالة الحالية:</strong> {selectedOrder.status}</p>
-                            <p className="mb-4"><strong>الموقع:</strong> خط العرض {selectedOrder.lat.toFixed(4)}، خط الطول {selectedOrder.lng.toFixed(4)}</p>
+                            <p className="mb-4"><strong>الموقع:</strong> خط العرض {selectedOrder.lat?.toFixed(4)}، خط الطول {selectedOrder.lng?.toFixed(4)}</p>
 
                             <h3 className="font-semibold mb-2">المنتجات:</h3>
                             <ul className="mb-4">

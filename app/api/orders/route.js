@@ -47,31 +47,14 @@
 //     }
 // }
 
-import prisma from '@/lib/prisma'
 import { NextResponse } from 'next/server'
-
-export async function GET() {
-    try {
-        const orders = await prisma.order.findMany({
-            include: {
-                orderItems: {
-                    include: {
-                        product: true, // إذا تحب تجيب اسم المنتج
-                    }
-                },
-                user: true,
-            }
-        });
-        return NextResponse.json(orders)
-    } catch (error) {
-        console.error(error)
-        return NextResponse.json({ error: 'فشل في جلب الطلبات' }, { status: 500 })
-    }
-}
+import { prisma } from '@/lib/prisma'
 
 export async function POST(request) {
     try {
         const body = await request.json()
+
+        const deliveryUrl = `https://www.google.com/maps?q=${body.locationLat},${body.locationLng}`
 
         const order = await prisma.order.create({
             data: {
@@ -79,6 +62,7 @@ export async function POST(request) {
                 mosqueName: body.mosqueName,
                 locationLat: body.locationLat,
                 locationLng: body.locationLng,
+                deliveryLocationUrl: deliveryUrl, // ✅ مهم جداً
                 totalPrice: body.totalPrice,
                 status: 'جديد',
                 orderItems: {
@@ -89,12 +73,19 @@ export async function POST(request) {
                 }
             },
             include: {
-                orderItems: true,
+                orderItems: {
+                    include: {
+                        product: true, // ✅ ليظهر اسم المنتج عند المندوب
+                    }
+                },
             }
         })
+
         return NextResponse.json(order, { status: 201 })
     } catch (error) {
         console.error(error)
         return NextResponse.json({ error: 'فشل في إنشاء الطلب' }, { status: 500 })
     }
 }
+
+

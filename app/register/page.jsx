@@ -1,48 +1,24 @@
 'use client'
-import React from 'react'
-
-
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-
-
-const res = await fetch('/api/auth/signup', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-        mosqueName: form.mosqueName,
-        email: form.email,
-        password: form.password,
-    }),
-})
-
-const data = await res.json()
-
-if (res.ok) {
-    alert('تم التسجيل بنجاح! يمكنك تسجيل الدخول الآن.')
-    router.push('/login')
-} else {
-    setError(data.error || 'حدث خطأ أثناء التسجيل')
-}
-
 
 export default function SignupPage() {
     const router = useRouter()
     const [form, setForm] = useState({
-        mosqueName: '',
+        username: '',
         email: '',
+        phone: '',
         password: '',
         confirmPassword: '',
     })
+
     const [error, setError] = useState('')
 
     const handleChange = e => {
         setForm({ ...form, [e.target.name]: e.target.value })
     }
 
-    const handleSubmit = e => {
+    const handleSubmit = async e => {
         e.preventDefault()
         setError('')
 
@@ -51,15 +27,29 @@ export default function SignupPage() {
             return
         }
 
-        if (!form.mosqueName || !form.email || !form.password) {
-            setError('يرجى ملء جميع الحقول')
+        if (!form.username || !form.email || !form.password || !form.confirmPassword) {
+            setError('يرجى ملء جميع الحقول المطلوبة')
             return
         }
 
-        // هنا ترسل البيانات للسيرفر (API) لإنشاء حساب العميل
-        // حالياً مجرد محاكاة تسجيل ناجح
-        alert('تم التسجيل بنجاح! يمكنك الآن تسجيل الدخول.')
-        router.push('/login')
+        try {
+            const res = await fetch('/api/auth/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(form),
+            })
+
+            const data = await res.json()
+
+            if (res.ok) {
+                alert('تم التسجيل بنجاح! يمكنك تسجيل الدخول الآن.')
+                router.push('/')
+            } else {
+                setError(data.error || 'حدث خطأ أثناء التسجيل')
+            }
+        } catch (err) {
+            setError('حدث خطأ في الاتصال بالخادم')
+        }
     }
 
     return (
@@ -69,12 +59,12 @@ export default function SignupPage() {
 
                 {error && <p className="mb-4 text-red-600 font-semibold text-center">{error}</p>}
 
-                <label className="block mb-2 font-semibold" htmlFor="mosqueName">اسم المسجد</label>
+                <label className="block mb-2 font-semibold" htmlFor="username">اسم المستخدم</label>
                 <input
-                    id="mosqueName"
-                    name="mosqueName"
+                    id="username"
+                    name="username"
                     type="text"
-                    value={form.mosqueName}
+                    value={form.username}
                     onChange={handleChange}
                     required
                     className="w-full mb-4 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
@@ -88,6 +78,17 @@ export default function SignupPage() {
                     value={form.email}
                     onChange={handleChange}
                     required
+                    className="w-full mb-4 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+
+                <label className="block mb-2 font-semibold" htmlFor="phone">رقم الهاتف</label>
+                <input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    value={form.phone}
+                    onChange={handleChange}
+                    // اجعلها required إذا أردت رقم الهاتف إجباري
                     className="w-full mb-4 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
                 />
 
@@ -115,7 +116,7 @@ export default function SignupPage() {
 
                 <button
                     type="submit"
-                    className="w-full bg-primary text-white py-2 rounded hover:bg-primary-dark transition"
+                    className="w-full bg-primary text-black py-2 rounded hover:bg-primary-dark transition"
                 >
                     تسجيل الحساب
                 </button>
@@ -123,4 +124,3 @@ export default function SignupPage() {
         </div>
     )
 }
-
